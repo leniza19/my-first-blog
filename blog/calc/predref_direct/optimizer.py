@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.integrate import ode, solve_ivp
 import matplotlib.pyplot as plt
+import os
+from mysite.settings import STATIC_ROOT
 
 
 def ode_steam_ref(times, init, parms):
@@ -268,7 +270,10 @@ def dir_problem():
     ax.set(xlabel='T, C', ylabel='vol. %')
     ax.grid()
 
-    fig.savefig("blog/static/test1.png")
+    file_path = os.path.join(STATIC_ROOT, 'test1.png')
+    fig.savefig(file_path)
+    #fig.savefig("/blog/static/test1.png")
+    #fig.savefig("{% static 'test1.png' %}")
     plt.show()
 
     ##################################
