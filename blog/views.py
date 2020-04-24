@@ -15,6 +15,16 @@ def post_list(request):
 def problem_result(request, pk):
     post = get_object_or_404(Post, pk=pk)
 
+    if post.problem_id == 1:
+        Eref = request.POST['Eref']
+        k_ref = request.POST['k_ref']
+        Emet = request.POST['Emet']
+        k_met = request.POST['k_met']
+        degree = request.POST['degree']
+        B = request.POST['B']
+        lh_model.dir_problem(Eref, k_ref, Emet, k_met, degree, B)
+        return render(request, 'blog/result_lang.html', {'post': post})
+
     if post.problem_id == 2:
         Eref = request.POST['Eref']
         k_ref = request.POST['k_ref']
@@ -24,15 +34,6 @@ def problem_result(request, pk):
         power_model.dir_problem_power(Eref, k_ref, Emet, k_met, degree)
         return render(request, 'blog/result_power.html', {'post': post})
 
-    if post.problem_id == 4:
-        Eref = request.POST['Eref']
-        k_ref = request.POST['k_ref']
-        Emet = request.POST['Emet']
-        k_met = request.POST['k_met']
-        degree = request.POST['degree']
-        B = request.POST['B']
-        lh_model.dir_problem(Eref, k_ref, Emet, k_met, degree, B)
-        return render(request, 'blog/result_lang.html', {'post': post})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
