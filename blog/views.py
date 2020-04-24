@@ -4,7 +4,7 @@ from .models import Post, Param
 from django.shortcuts import render, get_object_or_404
 from .forms import PostForm
 from django.shortcuts import redirect
-from .calc.predref_direct import optimizer
+from .calc.predref_direct import lh_model
 from .calc.predref_direct import power_model
 
 
@@ -22,6 +22,7 @@ def problem_result(request, pk):
         k_met = request.POST['k_met']
         degree = request.POST['degree']
         power_model.dir_problem_power(Eref, k_ref, Emet, k_met, degree)
+        return render(request, 'blog/result_power.html', {'post': post})
 
     if post.problem_id == 4:
         Eref = request.POST['Eref']
@@ -30,8 +31,8 @@ def problem_result(request, pk):
         k_met = request.POST['k_met']
         degree = request.POST['degree']
         B = request.POST['B']
-        optimizer.dir_problem(Eref, k_ref, Emet, k_met, degree, B)
-    return render(request, 'blog/problem_result.html', {'post': post})
+        lh_model.dir_problem(Eref, k_ref, Emet, k_met, degree, B)
+        return render(request, 'blog/result_lang.html', {'post': post})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)

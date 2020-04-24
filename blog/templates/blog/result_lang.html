@@ -1,0 +1,30 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="post">
+        {% if post.published_date %}
+            <div class="date">
+                {{ post.published_date }}
+            </div>
+        {% endif %}
+
+        <h1>{{ post.title }}</h1>
+        <!--<p>{{ post.text|linebreaksbr }}</p>-->
+        Эксперимент № 1: GHSV = 4000, P0 = 1.05
+
+        <p><img src="{% static 'lang_model1.png' %}" width="600"></p>
+
+        Эксперимент № 2: GHSV = 4000, P0 = 1.05
+
+        <p><img src="{% static 'lang_model2.png' %}" width="600"></p>
+
+        Эксперимент № 3: GHSV = 4000, P0 = 1.05
+
+        <p><img src="{% static 'lang_model3.png' %}" width="600"></p>
+
+        Эксперимент № 4: GHSV = 4000, P0 = 1.05
+
+        <p><img src="{% static 'lang_model4.png' %}" width="600"></p>
+    </div>
+{% endblock %}
