@@ -269,6 +269,6 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
     ax.set(xlabel='T, C', ylabel='vol. %')
     ax.grid()
 
-    file_path = os.path.join(STATIC_ROOT, 'test1.png')
+    file_path = os.path.join(STATIC_ROOT, 'power_model.png')
     fig.savefig(file_path)
     #plt.show()

@@ -11,6 +11,11 @@
 
         <h1>{{ post.title }}</h1>
         <!--<p>{{ post.text|linebreaksbr }}</p>-->
-        <p><img src="{% static 'test1.png' %}" width="600"></p>
+        {% if post.problem_id == 4 %}
+            <p><img src="{% static 'test1.png' %}" width="600"></p>
+        {% endif %}
+        {% if post.problem_id == 2 %}
+            <p><img src="{% static 'power_model.png' %}" width="600"></p>
+        {% endif %}
     </div>
 {% endblock %}
