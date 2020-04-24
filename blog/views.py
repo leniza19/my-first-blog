@@ -14,7 +14,8 @@ def post_list(request):
 def problem_result(request, pk):
     post = get_object_or_404(Post, pk=pk)
 
-    if pk == 1:
+    #if pk == 1:
+    if post.problem_id == 4:
         Eref = request.POST['Eref']
         k_ref = request.POST['k_ref']
         Emet = request.POST['Emet']
@@ -27,6 +28,7 @@ def problem_result(request, pk):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     params = Param.objects.filter(problem=post)
+
     print(params)
     return render(request, 'blog/post_detail.html', {'post': post, 'params': params})
 

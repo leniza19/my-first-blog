@@ -4,6 +4,7 @@ from django.utils import timezone
 
 
 class Post(models.Model):
+    problem_id = models.IntegerField(verbose_name='Номер задачи', null=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     brief_desc = models.TextField()
