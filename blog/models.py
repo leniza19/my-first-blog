@@ -22,7 +22,7 @@ class Post(models.Model):
 
 class Param(models.Model):
     param_id = models.IntegerField(primary_key=True, verbose_name='Номер параметра')
-    param_name = models.CharField(max_length=20, unique=True, verbose_name='Параметр')
+    param_name = models.CharField(max_length=20, verbose_name='Параметр')
     param_value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение параметра')
     param_ed = models.CharField(max_length=20, null = True, verbose_name='Единица измерения')
     problem = models.ForeignKey(Post, null=False, on_delete=models.CASCADE, related_name='problem')

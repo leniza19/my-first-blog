@@ -7,7 +7,7 @@ from mysite.settings import STATIC_ROOT
 
 
 def ode_steam_ref(times, init, parms):
-    keq_, GHSV_, L_, P0_, degree_, B_, curretn_T_, k_ = parms
+    keq_, GHSV_, L_, P0_, degree_, curretn_T_, k_ = parms
     R = 8.314
     P = P0_ * 10**5  # Давление
     m = np.array([44, 44, 2, 16, 18]) / 10**3
@@ -35,12 +35,12 @@ def ode_steam_ref(times, init, parms):
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
     if (Ci[0] < 0):
-        Ci[0] = 0
+        Ci[0] = 0.01
 
-    temp2 = (1 + B_ * Ci[0])
-    temp = pow(temp2, degree_)
-
-    w_ref1 = kk[0] * Ci[0] / (1 + B_ * Ci[0]) ** degree_
+    if degree_ < 0:
+        w_ref1 = k_[0] / Ci[0] ** (-degree_)
+    else:
+        w_ref1 = k_[0] * Ci[0] ** degree_
 
     C_H2 = Ci[2]
     if (p_CH4 * p_H2O ** 2) < (keq_ * p_CO2 * p_H2 ** 4):
@@ -57,8 +57,8 @@ def ode_steam_ref(times, init, parms):
 
 def k_eq(T):
     # [T] = K
-    R = 8.314;
-    v = [-1, -4, 1, 2]; # CO2, H2, CH4, H2O
+    R = 8.314
+    v = [-1, -4, 1, 2]  # CO2, H2, CH4, H2O
 
     # ------------- Табличные данные - --------------------------------------
     delH0F = np.array([-393.51, 0, - 74.85, - 241.81]) * 10**3
@@ -106,13 +106,12 @@ def k0_maker(x):
     y = np.power(10, x)
     return y
 
-def dir_problem(Eref, k_ref, Emet, k_met, degree, B):
-    print('starting direct problem - LH')
+def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
+    print('starting direct - power model')
     #kin_param = np.array([1.1743e+02, 1.0997e+01, 5.9343e+01, 6.6367e+00, 6.2124e-01, 5.7235e-02])  # working
-    kin_param = np.array([float(Eref), float(k_ref), float(Emet), float(k_met), float(degree), float(B)])  # working
+    kin_param = np.array([float(Eref), float(k_ref), float(Emet), float(k_met), float(degree)])  # working
     print(kin_param)
     degree = kin_param[4]
-    B = kin_param[5]
 
     int_step = 0.2  # шаг интегрирования
 
@@ -226,7 +225,7 @@ def dir_problem(Eref, k_ref, Emet, k_met, degree, B):
 
         keq = k_eq(curretn_T)
 
-        my_parms = [keq, GHSV, L, P0, degree, B, curretn_T, k]
+        my_parms = [keq, GHSV, L, P0, degree, curretn_T, k]
         sir_sol = solve_ivp(fun=lambda t, y: ode_steam_ref(t, y, my_parms), t_span=[min(my_times), max(my_times)], method='Radau', y0=my_init, t_eval=my_times)
         last = sir_sol.y.shape[1] - 1
 
