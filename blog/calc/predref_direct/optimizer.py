@@ -106,10 +106,11 @@ def k0_maker(x):
     y = np.power(10, x)
     return y
 
-def dir_problem():
+def dir_problem(Eref, k_ref, Emet, k_met, degree, B):
     print('starting calc')
-    kin_param = np.array([1.1743e+02, 1.0997e+01, 5.9343e+01, 6.6367e+00, 6.2124e-01, 5.7235e-02])  # working
-
+    #kin_param = np.array([1.1743e+02, 1.0997e+01, 5.9343e+01, 6.6367e+00, 6.2124e-01, 5.7235e-02])  # working
+    kin_param = np.array([float(Eref), float(k_ref), float(Emet), float(k_met), float(degree), float(B)])  # working
+    print(kin_param)
     degree = kin_param[4]
     B = kin_param[5]
 
@@ -252,7 +253,6 @@ def dir_problem():
     F = F/temper.size
     print(F)
 
-    #########################
     fig, ax = plt.subplots()
     ax.plot(temper_calc, Outlet_all[:, 0], label='C3H8', c = 'r')
     ax.plot(temper_calc, Outlet_all[:, 1], label='CO2', c = 'b')
@@ -272,48 +272,4 @@ def dir_problem():
 
     file_path = os.path.join(STATIC_ROOT, 'test1.png')
     fig.savefig(file_path)
-    #fig.savefig("/blog/static/test1.png")
-    #fig.savefig("{% static 'test1.png' %}")
-    plt.show()
-
-    ##################################
-
-    # iline = plt.plot("t","I","",data=sir_out,color="green",linewidth=2)
-    # rline = plt.plot("t","R","",data=sir_out,color="blue",linewidth=2)
-    # plt.xlabel("Time",fontweight="bold")
-    # plt.ylabel("Number",fontweight="bold")
-    # legend = plt.legend(title="Population",loc=5,bbox_to_anchor=(1.25,0.5))
-    # frame = legend.get_frame()
-    # frame.set_facecolor("white")
-    # frame.set_linewidth(0)
-    # plt.show()
-
-#def sir_ode(times, init, parms):
-#    b, g = parms
-#    S,I,R = init
-#    # ODEs
-#    dS = -b*S*I
-#    dI = b*S*I-g*I
-#    dR = g*I
-#    return [dS, dI, dR]
-
-#parms = [0.1, 0.05]
-#init = [0.99, 0.01, 0]
-#times = np.linspace(0, 200, 2001)
-
-#sir_sol = solve_ivp(fun=lambda t, y: sir_ode(t, y, parms), t_span=[min(times), max(times)], y0=init, t_eval=times)
-
-#sir_out = pd.DataFrame({"t": sir_sol["t"], "S":sir_sol["y"][0], "I":sir_sol["y"][1], "R":sir_sol["y"][2]})
-
-#plt.style.use("ggplot")
-
-#sline = plt.plot("t","S","",data=sir_out,color="red",linewidth=2)
-#iline = plt.plot("t","I","",data=sir_out,color="green",linewidth=2)
-#rline = plt.plot("t","R","",data=sir_out,color="blue",linewidth=2)
-#plt.xlabel("Time",fontweight="bold")
-#plt.ylabel("Number",fontweight="bold")
-#legend = plt.legend(title="Population",loc=5,bbox_to_anchor=(1.25,0.5))
-#frame = legend.get_frame()
-#frame.set_facecolor("white")
-#frame.set_linewidth(0)
-#plt.show()
+    #plt.show()

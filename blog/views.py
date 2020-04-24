@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.utils import timezone
-from .models import Post
+from .models import Post, Param
 from django.shortcuts import render, get_object_or_404
 from .forms import PostForm
 from django.shortcuts import redirect
@@ -13,19 +13,28 @@ def post_list(request):
 
 def problem_result(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    optimizer.dir_problem()
+
+    if pk == 1:
+        Eref = request.POST['Eref']
+        k_ref = request.POST['k_ref']
+        Emet = request.POST['Emet']
+        k_met = request.POST['k_met']
+        degree = request.POST['degree']
+        B = request.POST['B']
+        optimizer.dir_problem(Eref, k_ref, Emet, k_met, degree, B)
     return render(request, 'blog/problem_result.html', {'post': post})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
-	
+    params = Param.objects.filter(problem=post)
+    print(params)
+    return render(request, 'blog/post_detail.html', {'post': post, 'params': params})
+
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
-            print('5')
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()

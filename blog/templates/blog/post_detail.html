@@ -13,6 +13,22 @@
 
         <h1>{{ post.title }}</h1>
         <p>{{ post.text|linebreaksbr }}</p>
-        <a class="btn btn-default" href="{% url 'problem_result' pk=post.pk %}">Начать расчет</a>
+
+        <!--<a class="btn btn-default" href="{% url 'problem_result' pk=post.pk %}">Начать расчет</a>-->
+        <p><b>Параметры расчета:</b><br>
+
+        <form name="test" method="post" action="{% url 'problem_result' pk=post.pk %}">
+            {% for param in params %}
+                <p>
+                    <label for = {{ param.param_name}}>{{ param.param_name}} ({{ param.param_ed}})</label> :
+                    <input name={{param.param_name}} type="number"  placeholder={{ param.param_value}} step="0.0000001"
+                    value={{ param.param_value}} >
+                </p>
+            {% endfor %}
+            {% csrf_token %}
+            <p><input type="submit" value="Начать расчет">
+            <input type="reset" value="Очистить"></p>
+        </form>
+
     </div>
 {% endblock %}
