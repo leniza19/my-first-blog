@@ -36,25 +36,15 @@ def ode_steam_ref(times, init, parms):
     v_ref1 = np.array([-1, 3, 10, 0, - 6])  # for C3
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
-    #print(Ci[0])
-
-    #if (Ci[0] < 0):
-    #    Ci[0] = 0.01
-    #    print(Ci[0])
-    #    time.sleep(0.4)
 
     if (Ci[0] < 0):
-        #Ci[0] = 100
-        return np.array([1000, 1000, 1000, 1000, 1000])
+        Ci[0] = 0.01
 
     if degree_ < 0:
         #w_ref1 = k_[0] / Ci[0] ** ((-1)*degree_)
         w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
     else:
         w_ref1 = k_[0] * math.pow(Ci[0], degree_)
-
-    #print(w_ref1)
-    #time.sleep(0.4)
 
     C_H2 = Ci[2]
     if (p_CH4 * p_H2O ** 2) < (keq_ * p_CO2 * p_H2 ** 4):
