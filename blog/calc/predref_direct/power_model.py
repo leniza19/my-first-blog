@@ -4,6 +4,8 @@ from scipy.integrate import ode, solve_ivp
 import matplotlib.pyplot as plt
 import os
 from mysite.settings import STATIC_ROOT
+import time
+import math
 
 
 def ode_steam_ref(times, init, parms):
@@ -34,13 +36,25 @@ def ode_steam_ref(times, init, parms):
     v_ref1 = np.array([-1, 3, 10, 0, - 6])  # for C3
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
+    #print(Ci[0])
+
+    #if (Ci[0] < 0):
+    #    Ci[0] = 0.01
+    #    print(Ci[0])
+    #    time.sleep(0.4)
+
     if (Ci[0] < 0):
-        Ci[0] = 0.01
+        #Ci[0] = 100
+        return np.array([1000, 1000, 1000, 1000, 1000])
 
     if degree_ < 0:
-        w_ref1 = k_[0] / Ci[0] ** (-degree_)
+        #w_ref1 = k_[0] / Ci[0] ** ((-1)*degree_)
+        w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
     else:
-        w_ref1 = k_[0] * Ci[0] ** degree_
+        w_ref1 = k_[0] * math.pow(Ci[0], degree_)
+
+    #print(w_ref1)
+    #time.sleep(0.4)
 
     C_H2 = Ci[2]
     if (p_CH4 * p_H2O ** 2) < (keq_ * p_CO2 * p_H2 ** 4):
@@ -112,6 +126,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
     kin_param = np.array([float(Eref), float(k_ref), float(Emet), float(k_met), float(degree)])  # working
     print(kin_param)
     degree = kin_param[4]
+    print(degree)
 
     int_step = 0.2  # шаг интегрирования
     temper = []
@@ -119,7 +134,6 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
     for exp_number in range(1, 5):
         if exp_number == 1:
             # ###################### exp 1 #######################################
-
 
             temper = np.array([223, 233, 245, 253, 260, 267, 277, 290, 293, 306, 319, 334, 353])  # C
 
@@ -158,7 +172,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
                  [31.887, 46.054, 62.036, 71.644, 72.796, 76.988]  # CH4
                   ]) / 100
 
-            GHSV = 4000  # wet
+            GHSV = 4000 / 5 # wet
             L = 2.3  # высота слоя, см
             P0 = 5
 
@@ -173,7 +187,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
                 [7.679, 32.596, 54.699, 69.337, 75.866]  # CH4
                 ]) / 100
 
-            GHSV = 12000  # wet
+            GHSV = 12000 / 5 # wet
             L = 2.3  # высота слоя, см
             P0 = 5
 
@@ -196,8 +210,6 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
             Ea[j] = Ea_maker(kin_param[2 * j])  # 1, 3, 5, 7
             k0[j] = k0_maker((kin_param[2 * j + 1]))  # 2, 4, 6, 8
 
-        print(Ea)
-        print(k0)
 
         # C3H8, CO2, H2, CH4, H2O
         c0_m = np.array([25, 0, 0, 0, 75])
