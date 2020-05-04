@@ -37,14 +37,22 @@ def ode_steam_ref(times, init, parms):
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
 
-    if (Ci[0] < 0):
-        Ci[0] = 0.01
+    #if (Ci[0] < 0):
+    #    print('T = ' + str(curretn_T_ - 273.15), end= '; ')
+    #    print('propane = ' + str(Ci[0]))
+    #    Ci[0] = 0.01
 
     if degree_ < 0:
         #w_ref1 = k_[0] / Ci[0] ** ((-1)*degree_)
-        w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
+        if (Ci[0] < 0):
+            w_ref1 = -k_[0] / math.pow((-1) * Ci[0], (-1) * degree_)
+        else:
+            w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
     else:
-        w_ref1 = k_[0] * math.pow(Ci[0], degree_)
+        if (Ci[0] < 0):
+            w_ref1 = -k_[0] * math.pow((-1) * Ci[0], degree_)
+        else:
+            w_ref1 = k_[0] * math.pow(Ci[0], degree_)
 
     C_H2 = Ci[2]
     if (p_CH4 * p_H2O ** 2) < (keq_ * p_CO2 * p_H2 ** 4):
@@ -119,8 +127,28 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
     print(degree)
 
     int_step = 0.2  # шаг интегрирования
+    R = 8.314
+
     temper = []
     xexp = []
+
+    const_count = 2  # без константы   равновесия (ref3, met)
+
+    Ea = np.zeros(const_count)
+    k0 = np.zeros(const_count)
+    k = np.zeros(const_count)
+
+    for j in range(0, const_count):
+        Ea[j] = Ea_maker(kin_param[2 * j])  # 1, 3, 5, 7
+        k0[j] = k0_maker((kin_param[2 * j + 1]))  # 2, 4, 6, 8
+
+    # C3H8, CO2, H2, CH4, H2O
+    c0_m = np.array([25, 0, 0, 0, 75])
+    m = np.array([44, 44, 2, 16, 18]) / np.power(10, 3)  # g/Mole
+
+    xi = c0_m / 100
+    yi = xi * m / np.sum(xi * m)
+
     for exp_number in range(1, 5):
         if exp_number == 1:
             # ###################### exp 1 #######################################
@@ -183,34 +211,11 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
 
         #################################################################
 
-
-        temper_calc = np.arange(temper[0] - 1, temper[temper.size - 1] + 2, 1)
+        temper_calc = np.arange(temper[0] - 1, temper[temper.size - 1] + 2, 2)
 
         tspan = np.arange(0, L, int_step)
 
-        # ------------------------------------------------
-
-        const_count = 2  # без константы   равновесия (ref3, met)
-
-        Ea = np.zeros(const_count)
-        k0 = np.zeros(const_count)
-        k = np.zeros(const_count)
-
-        for j in range(0, const_count):
-            Ea[j] = Ea_maker(kin_param[2 * j])  # 1, 3, 5, 7
-            k0[j] = k0_maker((kin_param[2 * j + 1]))  # 2, 4, 6, 8
-
-
-        # C3H8, CO2, H2, CH4, H2O
-        c0_m = np.array([25, 0, 0, 0, 75])
-        m = np.array([44, 44, 2, 16, 18]) / np.power(10, 3)  # g/Mole
-
-        xi = c0_m / 100
-        yi = xi * m / np.sum(xi * m)
-
-        Outlet_all = np.zeros(xexp.shape)
-
-        R = 8.314
+        #Outlet_all = np.zeros(xexp.shape)
 
         my_init = yi
         my_times = tspan
@@ -249,9 +254,12 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
 
                     F_temp = F_temp / (m.size - 1)  # без H2O - последняя вода;
                     F = F + F_temp
+            del sir_sol, outlet
+
 
         F = F/temper.size
-        print(F)
+        #print(F)
+        print('----------------------------------------')
 
         fig, ax = plt.subplots()
         ax.plot(temper_calc, Outlet_all[:, 0], label='C3H8', c = 'r')
@@ -274,3 +282,5 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
         file_path = os.path.join(STATIC_ROOT, filename)
         fig.savefig(file_path)
         #plt.show()
+        # clear all variables
+        del Outlet_all
