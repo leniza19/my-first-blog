@@ -15,7 +15,23 @@ def ode_steam_ref(times, init, parms):
     m = np.array([44, 44, 2, 16, 18]) / 10**3
     x = np.array(init)
     kk = np.array(k_)
-    yi = (x / m)*P0_ / np.sum(x / m)  # C3H8, CO2, H2, CH4, H2O
+
+    if x[0] < 0.001:
+        x[0] = 0
+
+    if x[1] < 0.001:
+        x[1] = 0
+
+    if x[2] < 0.001:
+        x[2] = 0
+
+    if x[3] < 0.001:
+        x[3] = 0
+
+    if x[4] < 0.001:
+        x[4] = 0
+
+    yi = (x / m) * P0_ / np.sum(x / m)  # C3H8, CO2, H2, CH4, H2O
 
     Ci = yi * P / (R * curretn_T_)
 
@@ -36,21 +52,12 @@ def ode_steam_ref(times, init, parms):
     v_ref1 = np.array([-1, 3, 10, 0, - 6])  # for C3
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
-
-    #if (Ci[0] < 0):
-    #    print('T = ' + str(curretn_T_ - 273.15), end= '; ')
-    #    print('propane = ' + str(Ci[0]))
-    #    Ci[0] = 0.01
-
-    if degree_ < 0:
-        #w_ref1 = k_[0] / Ci[0] ** ((-1)*degree_)
-        if (Ci[0] < 0):
-            w_ref1 = -k_[0] / math.pow((-1) * Ci[0], (-1) * degree_)
-        else:
-            w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
+    if Ci[0] < 0.001:
+        w_ref1 = 0
+        Ci[0] = 0
     else:
-        if (Ci[0] < 0):
-            w_ref1 = -k_[0] * math.pow((-1) * Ci[0], degree_)
+        if degree_ < 0:
+            w_ref1 = k_[0] / math.pow(Ci[0], (-1) * degree_)
         else:
             w_ref1 = k_[0] * math.pow(Ci[0], degree_)
 
@@ -59,6 +66,9 @@ def ode_steam_ref(times, init, parms):
         w_met = kk[1] * C_H2 * (1 - (p_CH4 * p_H2O ** 2) / (keq_ * p_CO2 * p_H2 ** 4))
     else:
         w_met = 0
+
+    #if curretn_T_ > 485:
+    #    print(Ci, w_ref1, w_met)
 
     xdot = np.zeros(x.size)
 
@@ -126,7 +136,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
     degree = kin_param[4]
     print(degree)
 
-    int_step = 0.2  # шаг интегрирования
+    int_step = 0.4  # шаг интегрирования
     R = 8.314
 
     temper = []
@@ -211,7 +221,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
 
         #################################################################
 
-        temper_calc = np.arange(temper[0] - 1, temper[temper.size - 1] + 2, 2)
+        temper_calc = np.arange(temper[0] - 1, temper[temper.size - 1] + 2, 5)
 
         tspan = np.arange(0, L, int_step)
 
@@ -225,6 +235,7 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
 
         for j in range(temper_calc.size):
             curretn_T = temper_calc[j] + 273.15  # K
+            print(curretn_T)
 
             for i in range(const_count):
                 k[i] = arren(k0[i], Ea[i], temper_calc[j])
@@ -232,7 +243,8 @@ def dir_problem_power(Eref, k_ref, Emet, k_met, degree):
             keq = k_eq(curretn_T)
 
             my_parms = [keq, GHSV, L, P0, degree, curretn_T, k]
-            sir_sol = solve_ivp(fun=lambda t, y: ode_steam_ref(t, y, my_parms), t_span=[min(my_times), max(my_times)], method='Radau', y0=my_init, t_eval=my_times)
+            sir_sol = solve_ivp(fun=lambda t, y: ode_steam_ref(t, y, my_parms), t_span=[min(my_times), max(my_times)], method='Radau',
+                                y0=my_init, t_eval=my_times)
             last = sir_sol.y.shape[1] - 1
 
             temp_sum = 0

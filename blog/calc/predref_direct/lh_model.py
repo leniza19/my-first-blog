@@ -34,7 +34,7 @@ def ode_steam_ref(times, init, parms):
     v_ref1 = np.array([-1, 3, 10, 0, - 6])  # for C3
     v_met = np.array([0, -1, -4, 1, 2])  # C3H8, CO2, H2, CH4, H2O
 
-    if (Ci[0] < 0):
+    if (Ci[0] < 0.001):
         Ci[0] = 0
 
     temp2 = (1 + B_ * Ci[0])
@@ -166,7 +166,7 @@ def dir_problem(Eref, k_ref, Emet, k_met, degree, B):
                  [31.887, 46.054, 62.036, 71.644, 72.796, 76.988]  # CH4
                  ]) / 100
 
-            GHSV = 4000  # wet
+            GHSV = 4000 / 5  # wet
             L = 2.3  # высота слоя, см
             P0 = 5
 
@@ -181,7 +181,7 @@ def dir_problem(Eref, k_ref, Emet, k_met, degree, B):
                  [7.679, 32.596, 54.699, 69.337, 75.866]  # CH4
                  ]) / 100
 
-            GHSV = 12000  # wet
+            GHSV = 12000 / 5 # wet
             L = 2.3  # высота слоя, см
             P0 = 5
 
